@@ -6,5 +6,6 @@
   "config_flow": true,
   "dependencies": [],
   "requirements": ["beautifulsoup4", "bchydro==0.8.1"],
-  "codeowners": ["@emcniece"]
+  "codeowners": ["@emcniece"],
+  "version": "0.7"
 }
