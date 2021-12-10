@@ -59,16 +59,31 @@ class BCHydroSensor(BCHydroDeviceEntity):
         name: str,
         icon: str,
         unit_of_measurement: str = "",
+        device_class: str = "",
+        state_class: str = "",
     ) -> None:
         """Initialize BCHydro sensor."""
         self._unit_of_measurement = unit_of_measurement
+        self._device_class = device_class
+        self._state_class = state_class
+        self._billing_start = client.account.evpBillingStart
 
         super().__init__(coordinator, client, key, name, icon)
 
     @property
-    def unit_of_measurement(self) -> str:
+    def native_unit_of_measurement(self) -> str:
         """Return the unit this state is expressed in."""
         return self._unit_of_measurement
+
+    @property
+    def device_class(self) -> str:
+        """Return the unit this state is expressed in."""
+        return self._device_class
+
+    @property
+    def state_class(self) -> str:
+        """Return the unit this state is expressed in."""
+        return self._state_class
 
 
 class BCHydroLatestUsage(BCHydroSensor):
@@ -84,15 +99,17 @@ class BCHydroLatestUsage(BCHydroSensor):
             "BCHydro Latest Usage Reading",
             "mdi:flash",
             "kWh",
+            "energy",
+            "total",
         )
 
     @property
-    def state(self) -> str:
+    def native_value(self) -> float:
         """Return the state of the sensor."""
         usage: BCHydroDailyUsage = self._coordinator.data
         if usage is None or not usage.electricity:
             return None
-        return usage.electricity[-1].consumption
+        return float(usage.electricity[-1].consumption)
 
     @property
     def device_state_attributes(self) -> object:
@@ -104,6 +121,11 @@ class BCHydroLatestUsage(BCHydroSensor):
             "start_time": usage.electricity[-1].interval.start,
             "end_time": usage.electricity[-1].interval.end,
         }
+
+    @property
+    def last_reset(self) -> datetime:
+        """Return the unit this state is expressed in."""
+        return datetime.now()
 
 
 class BCHydroLatestCost(BCHydroSensor):
@@ -119,15 +141,17 @@ class BCHydroLatestCost(BCHydroSensor):
             "BCHydro Latest Cost Reading",
             "mdi:currency-usd",
             "$",
+            "monetary",
+            "total",
         )
 
     @property
-    def state(self) -> str:
+    def native_value(self) -> float:
         """Return the state of the sensor."""
         usage: BCHydroDailyUsage = self._coordinator.data
         if usage is None or not usage.electricity:
             return None
-        return usage.electricity[-1].cost
+        return float(usage.electricity[-1].cost)
 
     @property
     def device_state_attributes(self) -> object:
@@ -139,6 +163,10 @@ class BCHydroLatestCost(BCHydroSensor):
             "start_time": usage.electricity[-1].interval.start,
             "end_time": usage.electricity[-1].interval.end,
         }
+
+    @property
+    def last_reset(self) -> datetime:
+        return datetime.now()
 
 
 class BCHydroEstimatedUsage(BCHydroSensor):
@@ -154,10 +182,12 @@ class BCHydroEstimatedUsage(BCHydroSensor):
             "BCHydro Estimated Usage Reading",
             "mdi:flash",
             "kWh",
+            "energy",
+            "measurement",
         )
 
     @property
-    def state(self) -> str:
+    def native_value(self) -> str:
         """Return the state of the sensor."""
         usage: BCHydroDailyUsage = self._coordinator.data
         if usage is None or not usage.rates:
@@ -189,15 +219,17 @@ class BCHydroEstimatedCost(BCHydroSensor):
             "BCHydro Estimated Cost Reading",
             "mdi:currency-usd",
             "$",
+            "monetary",
+            "measurement",
         )
 
     @property
-    def state(self) -> str:
+    def native_value(self) -> float:
         """Return the state of the sensor."""
         usage: BCHydroDailyUsage = self._coordinator.data
         if usage is None or not usage.rates:
             return None
-        return usage.rates.estimated_cost
+        return float(usage.rates.estimated_cost)
 
     @property
     def device_state_attributes(self) -> object:

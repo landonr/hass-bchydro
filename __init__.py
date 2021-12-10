@@ -9,6 +9,8 @@ from homeassistant.config_entries import ConfigEntry
 from homeassistant.const import CONF_PASSWORD, CONF_USERNAME
 from homeassistant.exceptions import ConfigEntryNotReady
 from homeassistant.helpers.entity import Entity
+from homeassistant.components import sensor
+from homeassistant.components.sensor import SensorEntity
 from homeassistant.helpers.typing import ConfigType, HomeAssistantType
 from homeassistant.helpers.update_coordinator import DataUpdateCoordinator
 
@@ -77,7 +79,7 @@ async def async_unload_entry(hass: HomeAssistantType, entry: ConfigType) -> bool
     return True
 
 
-class BCHydroEntity(Entity):
+class BCHydroEntity(SensorEntity):
     """Defines a base BCHydro entity."""
 
     def __init__(
