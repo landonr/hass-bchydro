@@ -49,7 +49,7 @@ async def async_setup_entry(hass: HomeAssistantType, entry: ConfigEntry) -> bool
         name="sensor",
         update_method=async_update_data,
         # Polling interval. Will only be polled if there are subscribers.
-        update_interval=timedelta(seconds=3600),
+        update_interval=timedelta(seconds=21600),
     )
 
     hass.data.setdefault(DOMAIN, {})
@@ -121,7 +121,7 @@ class BCHydroEntity(SensorEntity):
     @property
     def should_poll(self):
         """No need to poll. Coordinator notifies entity of updates."""
-        return False
+        return True
 
     async def async_update(self) -> None:
         """Update BCHydro entity."""
