@@ -124,8 +124,11 @@ class BCHydroLatestUsage(BCHydroSensor):
 
     @property
     def last_reset(self) -> datetime:
+        usage: BCHydroDailyUsage = self._coordinator.data
+        if usage is None or not usage.electricity:
+            return None
         """Return the unit this state is expressed in."""
-        return datetime.now()
+        return datetime.fromisoformat(usage.electricity[-1].interval.end)
 
 
 class BCHydroLatestCost(BCHydroSensor):
@@ -166,7 +169,10 @@ class BCHydroLatestCost(BCHydroSensor):
 
     @property
     def last_reset(self) -> datetime:
-        return datetime.now()
+        usage: BCHydroDailyUsage = self._coordinator.data
+        if usage is None or not usage.electricity:
+            return None
+        return datetime.fromisoformat(usage.electricity[-1].interval.end)
 
 
 class BCHydroEstimatedUsage(BCHydroSensor):
